@@ -1,0 +1,76 @@
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #08090C;
+  --surface-rail: #0D1014;
+  --surface: #12161B;
+  --surface-2: #1A1F26;
+  --border: #1F252D;
+  --border-strong: #2A313B;
+  --text: #E6E9EE;
+  --text-muted: #8A93A0;
+  --text-faint: #5B6472;
+  --accent: #2F6BFF;
+  --accent-hover: #4A80FF;
+  --accent-soft: rgba(47, 107, 255, 0.12);
+  --success: #34C77B;
+  --warning: #F5A623;
+  --danger: #F0525A;
+  --overlay: rgba(8, 9, 12, 0.72);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbars that match the dark hairline surfaces */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-dot {
+    animation: none !important;
+  }
+}
