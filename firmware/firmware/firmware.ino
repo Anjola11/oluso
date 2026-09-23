@@ -137,12 +137,16 @@ void setup() {
   Serial.printf("WiFi connected, IP: %s\n", WiFi.localIP().toString().c_str());
 
   // WebSocket client
-  ws.begin(SERVER_HOST, SERVER_PORT, wsPath.c_str());
+  if (SERVER_PORT == 443) {
+    ws.beginSSL(SERVER_HOST, SERVER_PORT, wsPath.c_str());
+    Serial.printf("Streaming to wss://%s:%d%s\n", SERVER_HOST, SERVER_PORT, wsPath.c_str());
+  } else {
+    ws.begin(SERVER_HOST, SERVER_PORT, wsPath.c_str());
+    Serial.printf("Streaming to ws://%s:%d%s\n", SERVER_HOST, SERVER_PORT, wsPath.c_str());
+  }
   ws.onEvent(onWsEvent);
   ws.setReconnectInterval(WS_RECONNECT_MS);
   ws.enableHeartbeat(15000, 3000, 2);  // ping every 15s, 3s pong timeout, 2 misses -> drop
-
-  Serial.printf("Streaming to ws://%s:%d%s\n", SERVER_HOST, SERVER_PORT, wsPath.c_str());
 }
 
 // ---------- Loop ----------
