@@ -51,8 +51,8 @@ git push -u origin main
 3. Connect your GitHub repository (`<your-repo-name>`).
 4. In **Settings → Buildpacks**, ensure the **heroku/python** buildpack is present (Heroku detects `requirements.txt` and `Procfile` in the root).
 5. In **Settings → Config Vars**, add:
-   - `CORS_ORIGINS`: Comma-separated list of allowed origins (e.g. `https://your-frontend.vercel.app` or `*`).
-   *(Note: The backend automatically allows local development IPs and all `*.vercel.app` domains out of the box).*
+   - `ALLOWED_ORIGINS`: Comma-separated list of allowed origins (e.g. `https://your-frontend.vercel.app` or `*`).
+   *(Note: The default in config.py already includes `http://localhost:5173`, `http://127.0.0.1:5173`, and `*`).*
 6. Under **Deploy → Manual deploy**, choose branch `main` and click **Deploy Branch**.
 
 ### Option B: Heroku CLI
@@ -64,7 +64,7 @@ heroku login
 heroku create oluso-streaming-api --buildpack heroku/python
 
 # Configure CORS origin
-heroku config:set CORS_ORIGINS="https://your-frontend.vercel.app"
+heroku config:set ALLOWED_ORIGINS="https://your-frontend.vercel.app,http://localhost:5173"
 
 # Push to Heroku
 git push heroku main
@@ -94,7 +94,7 @@ Expected response:
    *(Do NOT add a trailing slash. The frontend automatically translates `https://` to `wss://` for WebSocket streaming).*
 5. Click **Deploy**.
 6. Once deployed, copy your production Vercel URL (e.g. `https://oluso-stream.vercel.app`).
-7. (Optional but recommended) In your Heroku app settings, update `CORS_ORIGINS` to match your Vercel URL:
+7. (Optional) In your Heroku app settings, set `ALLOWED_ORIGINS` to match your Vercel URL:
    `https://oluso-stream.vercel.app`
 
 ---
