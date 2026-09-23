@@ -1,7 +1,7 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { API_URL, envLabel } from '../../lib/config'
+import { envLabel } from '../../lib/config'
 import type { HealthStatus } from '../../hooks/useBackendHealth'
 import { Button } from '../ui/button'
 import { cn } from '../../lib/utils'
@@ -17,14 +17,12 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
   onlineDeviceCount,
   onAddDevice,
 }) => {
-  let backendHost = 'No backend'
-  if (API_URL) {
-    try {
-      backendHost = new URL(API_URL).host
-    } catch {
-      backendHost = API_URL.replace(/^https?:\/\//, '')
-    }
-  }
+  const statusLabel =
+    health === 'ok'
+      ? 'Backend Online'
+      : health === 'checking'
+      ? 'Connecting…'
+      : 'Backend Offline'
 
   return (
     <div className="bg-surface border border-border rounded-xl p-[14px] flex flex-col gap-3 shrink-0">
@@ -43,7 +41,7 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
         </span>
       </div>
 
-      {/* Backend Health & Host Row */}
+      {/* Backend Health Status Row */}
       <div className="flex items-center gap-2">
         <span
           className={cn(
@@ -54,11 +52,8 @@ export const ConnectionCard: React.FC<ConnectionCardProps> = ({
           )}
           title={`Backend status: ${health}`}
         />
-        <span
-          className="font-mono text-[12px] text-text-muted truncate select-all"
-          title={API_URL ?? 'Unconfigured'}
-        >
-          {backendHost}
+        <span className="text-[12px] font-medium text-text-muted">
+          {statusLabel}
         </span>
       </div>
 
