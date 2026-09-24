@@ -121,3 +121,22 @@ def test_cors_headers_vercel_origin():
     assert res.status_code == 200
     assert res.headers.get("access-control-allow-origin") == "https://oluso-streaming.vercel.app"
 
+
+def test_duplicate_device_connection_terminates_previous(streaming_env):
+    """Verify that a second device connection with the same ID terminates the previous connection."""
+    app, hub = streaming_env
+    client = TestClient(app)
+
+    with client.websocket_connect("/ws/device/cam-dup") as dev1:
+        assert hub.devices["cam-dup"] is not None
+
+        # Second device connects with same ID
+        with client.websocket_connect("/ws/device/cam-dup") as dev2:
+            assert hub.devices["cam-dup"] is not None
+
+            # Frame from dev2 works
+            with client.websocket_connect("/ws/view/cam-dup") as viewer:
+                dev2.send_bytes(b"frame-from-dev2")
+                assert viewer.receive_bytes() == b"frame-from-dev2"
+
+

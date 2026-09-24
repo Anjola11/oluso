@@ -16,12 +16,14 @@ interface AddDeviceDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   existingDeviceCount: number
+  existingDeviceIds?: string[]
 }
 
 export const AddDeviceDialog: React.FC<AddDeviceDialogProps> = ({
   open,
   onOpenChange,
   existingDeviceCount,
+  existingDeviceIds,
 }) => {
   const suggestedId = `camera-${(existingDeviceCount + 1).toString().padStart(3, '0')}`
   const [deviceId, setDeviceId] = useState(suggestedId)
@@ -82,6 +84,11 @@ export const AddDeviceDialog: React.FC<AddDeviceDialogProps> = ({
           {!validDeviceId && (
             <span className="text-[11px] text-danger">
               Device ID must be 1-64 alphanumeric characters, hyphens or underscores.
+            </span>
+          )}
+          {validDeviceId && existingDeviceIds?.includes(effectiveId) && (
+            <span className="text-[11px] text-warning flex items-center gap-1.5 font-medium">
+              ⚠️ Warning: &apos;{effectiveId}&apos; already exists. Two ESPs sharing this ID will disconnect each other and conflict.
             </span>
           )}
         </div>

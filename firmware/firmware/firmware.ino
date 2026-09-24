@@ -15,6 +15,9 @@ constexpr uint32_t WS_RECONNECT_MS         = 2000;
 constexpr uint32_t MIN_FRAME_INTERVAL_MS   = 50;   // ~20 FPS cap; raise to slow down
 constexpr uint32_t STATS_INTERVAL_MS       = 5000;
 constexpr uint8_t  MAX_CAPTURE_FAILURES    = 10;
+// Set to true to append the last 4 hex characters of the board's MAC address
+// (e.g. "camera-001-3A2F") to guarantee uniqueness across multiple ESPs.
+constexpr bool     APPEND_MAC_TO_ID        = false;
 
 WebSocketsClient ws;
 String wsPath = String("/ws/device/") + DEVICE_ID;
@@ -135,6 +138,18 @@ void setup() {
     restartAfter("WiFi connection failed", 5000);
   }
   Serial.printf("WiFi connected, IP: %s\n", WiFi.localIP().toString().c_str());
+
+  // Derive device ID and WebSocket path
+  String effectiveDeviceId = DEVICE_ID;
+  if (APPEND_MAC_TO_ID) {
+    uint8_t mac[6];
+    WiFi.macAddress(mac);
+    char macSuffix[8];
+    snprintf(macSuffix, sizeof(macSuffix), "-%02X%02X", mac[4], mac[5]);
+    effectiveDeviceId += macSuffix;
+  }
+  wsPath = String("/ws/device/") + effectiveDeviceId;
+  Serial.printf("Device ID: %s\n", effectiveDeviceId.c_str());
 
   // WebSocket client
   if (SERVER_PORT == 443) {

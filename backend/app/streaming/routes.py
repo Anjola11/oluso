@@ -16,10 +16,20 @@ def create_streaming_router(hub: StreamingHub) -> APIRouter:
     ):
         await websocket.accept()
 
-        hub.register_device(
+        old_ws = hub.register_device(
             device_id=device_id,
             websocket=websocket,
         )
+        if old_ws is not None and old_ws is not websocket:
+            logger.warning(
+                "Duplicate connection for device '%s'; terminating previous session.",
+                device_id,
+            )
+            try:
+                await old_ws.close(code=1008, reason="Replaced by new connection")
+            except Exception:
+                pass
+
         logger.info("Device connected: %s", device_id)
 
         try:
@@ -33,6 +43,8 @@ def create_streaming_router(hub: StreamingHub) -> APIRouter:
 
         except WebSocketDisconnect:
             pass
+        except Exception as exc:
+            logger.warning("Device '%s' websocket error: %s", device_id, exc)
 
         finally:
             hub.unregister_device(device_id, websocket)

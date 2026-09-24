@@ -319,6 +319,7 @@ export const AppShell: React.FC = () => {
         open={addDeviceOpen}
         onOpenChange={setAddDeviceOpen}
         existingDeviceCount={devices.length}
+        existingDeviceIds={devices.map((d) => d.device_id)}
       />
 
       {/* Settings Dialog */}

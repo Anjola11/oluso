@@ -17,9 +17,11 @@ class StreamingHub:
         self.last_frame_at: dict[str, float] = {}
         self.known_devices: set[str] = set()
 
-    def register_device(self, device_id: str, websocket: Any):
+    def register_device(self, device_id: str, websocket: Any) -> Any | None:
+        old_ws = self.devices.get(device_id)
         self.devices[device_id] = websocket
         self.known_devices.add(device_id)
+        return old_ws
 
     def unregister_device(self, device_id: str, websocket: Any | None = None):
         if websocket is None or self.devices.get(device_id) is websocket:

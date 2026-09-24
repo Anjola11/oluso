@@ -130,3 +130,29 @@ def test_list_devices_and_last_frame(hub: StreamingHub):
     assert devices[0]["online"] is False
     # last_frame_at is preserved
     assert devices[0]["last_frame_at"] is not None
+
+
+def test_register_duplicate_device_returns_old_websocket(hub: StreamingHub):
+    """Verify that registering a duplicate device returns the old websocket and prevents stale unregister."""
+    ws1 = object()
+    ws2 = object()
+
+    # First registration
+    assert hub.register_device("camera-001", ws1) is None
+    assert hub.devices.get("camera-001") is ws1
+    assert hub.list_devices()[0]["online"] is True
+
+    # Second registration with same ID returns ws1
+    old = hub.register_device("camera-001", ws2)
+    assert old is ws1
+    assert hub.devices.get("camera-001") is ws2
+
+    # Old websocket closing does NOT unregister ws2
+    hub.unregister_device("camera-001", ws1)
+    assert hub.devices.get("camera-001") is ws2
+    assert hub.list_devices()[0]["online"] is True
+
+    # Active websocket unregister cleanly marks offline
+    hub.unregister_device("camera-001", ws2)
+    assert "camera-001" not in hub.devices
+    assert hub.list_devices()[0]["online"] is False
